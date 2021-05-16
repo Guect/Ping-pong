@@ -7,7 +7,7 @@ class GameSprite(sprite.Sprite):
         self.image = transform.scale(image.load(player_image), (w, h))
         self.speed = player_speed
         self.speed_x = player_speed
-        self.speed_y = player_speed
+        self.speed_y = int(player_speed / 2)
         self.rect = self.image.get_rect()
         self.rect.x = player_x
         self.rect.y = player_y
@@ -34,9 +34,15 @@ class Ball(GameSprite):
     def update(self):
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
+        if self.rect.y < 1 or self.rect.y > height - 101:
+            pong.play()
+            self.speed_y *= -1
+        if sprite.collide_rect(ball, player1) or sprite.collide_rect(ball, player2):
+            pong.play()
+            self.speed_x *= -1
 
 
-weight = 800
+weight = 1000
 height = 600
 
 window = display.set_mode((weight, height))
@@ -44,14 +50,19 @@ display.set_caption("Ping-Pong")
 
 clock = time.Clock()
 
-player1 = Player1('wall.png', 40, 100, 10, height / 2 - 50, 5)
-player2 = Player2('wall.png', 40, 100, weight - 50, height / 2 - 50, 5)
-ball = Ball('ball.png', 100, 100, weight / 2 - 50, height / 2 - 50, 25)
+pong_sound = 'pong.ogg'
+ball_png = 'ball.png'
+paket = 'wall.png'
+
+player1 = Player1(paket, 40, 100, 10, height / 2 - 50, 5)
+player2 = Player2(paket, 40, 100, weight - 50, height / 2 - 50, 5)
+ball = Ball(ball_png, 100, 100, weight / 2 - 50, height / 2 - 50, 5)
 
 #font.init()
-#mixer.init()
+mixer.init()
 #mixer.music.load('space.ogg')
 #mixer.music.play()
+pong = mixer.Sound(pong_sound)
 
 '''font.init()
 wiwin = font.SysFont('Times', 36).render("YOU WIN!!!",1,(0,255,0))
