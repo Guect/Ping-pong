@@ -32,6 +32,7 @@ class Player2(GameSprite):
 
 class Ball(GameSprite):
     def update(self):
+        global c1, c2
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
         if self.rect.y < 1 or self.rect.y > height - 101:
@@ -40,10 +41,28 @@ class Ball(GameSprite):
         if sprite.collide_rect(ball, player1) or sprite.collide_rect(ball, player2):
             pong.play()
             self.speed_x *= -1
+        if self.rect.x < -101:
+            c2 += 1
+            count = font.SysFont('Times', 36).render(str(c1) + ' : ' + str(c2), 0, (0, 0, 0))
+            self.rect.x = weight / 2 - 50
+            self.rect.y = height / 2 - 50
+            self.speed_x = 5
+            self.speed_y = 5
+        if self.rect.x > weight:
+            c1 += 1
+            count = font.SysFont('Times', 36).render(str(c1) + ' : ' + str(c2), 0, (0, 0, 0))
+            self.rect.x = weight / 2 - 50
+            self.rect.y = height / 2 - 50
+            self.speed_x = -5
+            self.speed_y = 5
+            
 
 
 weight = 1000
 height = 600
+
+c1 = 0
+c2 = 0
 
 window = display.set_mode((weight, height))
 display.set_caption("Ping-Pong")
@@ -58,16 +77,11 @@ player1 = Player1(paket, 40, 100, 10, height / 2 - 50, 5)
 player2 = Player2(paket, 40, 100, weight - 50, height / 2 - 50, 5)
 ball = Ball(ball_png, 100, 100, weight / 2 - 50, height / 2 - 50, 5)
 
-#font.init()
 mixer.init()
-#mixer.music.load('space.ogg')
-#mixer.music.play()
 pong = mixer.Sound(pong_sound)
 
-'''font.init()
-wiwin = font.SysFont('Times', 36).render("YOU WIN!!!",1,(0,255,0))
-lolose = font.SysFont('Times', 36).render("YOU lose!!!",1,(255,0,0))
-lilive = font.SysFont('Times', 36).render (str(live),0,(0,255,0))'''
+font.init()
+count = font.SysFont('Times', 36).render(str(c1) + ' : ' + str(c2), 0, (0, 0, 0))
 
 finish = False
 run = True
@@ -87,7 +101,8 @@ while run:
         player1.reset()
         player2.reset()
         ball.reset()
-    
+
+        window.blit(count, (weight / 2 - 50, 50))    
         
     clock.tick(120)
     display.update()
